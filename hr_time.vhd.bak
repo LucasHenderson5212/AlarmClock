@@ -1,0 +1,44 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_arith.all;
+use ieee.std_logic_unsigned.all;
+
+entity hr_time is
+	port(
+		HR_CLK : in std_logic;
+		SET : in std_logic;
+		HrTensDigitSet, HrOnesDigitSet : in std_logic_vector(3 downto 0);
+		HrTensDigitOut, HrOnesDigitOut : out std_logic_vector(3 downto 0);
+		AP_CLK : out std_logic
+	);
+end hr_time;
+
+architecture a of hr_time is
+	signal hr_flag : std_logic;
+	signal ap_flag : std_logic;
+	signal HrOnesDigit, HrTensDigit : std_logic_vector(3 downto 0);
+begin
+
+    process(HR_CLK, SET)
+    begin
+        if(SET='0') then -- reset
+             HrOnesDigit<=HrOnesDigitSet;
+             HrTensDigit<=HrTensDigitSet;
+        elsif(min_flag'event) then
+            if (HrOnesDigit=9) then
+                HrOnesDigit<="0000";
+                HrTensDigit<=HrTensDigit+'1';
+            else
+                HrOnesDigit<=HrOnesDigit+'1';
+            end if;
+            if (HrTensDigit=1 and HrOnesDigit>=3) then
+                HrTensDigit<="0000";
+                hr_flag <= not hr_flag;
+                HrOnesDigit<="0001";
+            end if;
+        end if;
+		  HR_CLK <= ap_flag;
+		  HrOnesDigitOut <= HrOnesDigit;
+		  HrTensDigitOut <= HrTensDigit;
+    end process;
+end a;

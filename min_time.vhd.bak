@@ -1,0 +1,45 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_arith.all;
+use ieee.std_logic_unsigned.all;
+
+entity min_time is
+	port(
+		MIN_CLK : in std_logic;
+		SET : in std_logic;
+		MinTensDigitSet, MinOnesDigitSet : in std_logic_vector(3 downto 0);
+		MinTensDigitOut, MinOnesDigitOut : out std_logic_vector(3 downto 0);
+		HR_CLK : out std_logic
+	);
+end min_time;
+
+architecture a of min_time is
+	signal min_flag : std_logic;
+	signal hr_flag : std_logic;
+	signal MinOnesDigit, MinTensDigit : std_logic_vector(3 downto 0);
+begin
+
+    process(MIN_CLK, SET)
+    begin
+		MinOnesDigit<=MinOnesDigitSet;
+        MinTensDigit<=MinTensDigitSet;
+        if(SET='0') then -- reset
+             MinOnesDigit<=MinOnesDigitSet;
+             MinTensDigit<=MinTensDigitSet;
+        elsif(MIN_CLK'event and MIN_CLK='1') then
+            if (MinOnesDigit=9) then
+                MinOnesDigit<="0000";
+                if (MinTensDigit=5) then
+                    MinTensDigit<="0000";
+                    hr_flag <= not hr_flag;
+                else MinTensDigit<=MinTensDigit+'1';
+                end if;
+            else
+                MinOnesDigit<=MinOnesDigit+'1';
+            end if;
+        end if;
+		  MIN_CLK <= hr_flag;
+		  MinOnesDigitOut <= MinOnesDigit;
+		  MinTensDigitOut <= MinTensDigit;
+    end process;
+end a;

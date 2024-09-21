@@ -1,0 +1,25 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity Signal_Change_Detector is
+    port (
+        Input_Signal : in std_logic;
+        Output_Signal : out std_logic
+    );
+end Signal_Change_Detector;
+
+architecture Behavioral of Signal_Change_Detector is
+    signal prev_input : std_logic := '0';  -- Initialize previous input state
+begin
+    process(Input_Signal)
+    begin
+        if rising_edge(Input_Signal) then  -- Detect rising edge of the input signal
+            if prev_input = '0' then        -- Check if the previous state was low
+                Output_Signal <= '1';       -- Send high signal
+            else
+                Output_Signal <= '0';       -- Send low signal
+            end if;
+        end if;
+        prev_input <= Input_Signal;         -- Update the previous input state
+    end process;
+end Behavioral;

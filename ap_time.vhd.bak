@@ -1,0 +1,33 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_arith.all;
+use ieee.std_logic_unsigned.all;
+
+entity ap_time is
+	port(
+		AP_INDICATOR : in std_logic;
+		SET : in std_logic;
+		ALARM : in std_logic;
+		CLOCK : in std_logic;
+		AP : out std_logic
+	);
+end ap_time;
+
+architecture a of ap_time is
+	signal ap_time : std_logic;
+	signal IsStartup : std_logic := '0';
+begin
+	
+	process(AP_INDICATOR, SET, CLOCK)
+	begin
+		if IsStartup<14 then
+			ap_time <= '0'
+			IsStartup <= IsStartup+1;
+		elsif(SET='0' and ALARM='0') then -- reset
+			ap_time <= SET
+		elsif(AP_INDICATOR = '0') then
+			ap_time <= '0';
+		end if;
+		AP <= ap_time;
+	end process;
+end a;
